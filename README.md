@@ -38,15 +38,19 @@ ui <- fluidPage(
                
                
                tabPanel(“GDP”,
+               # Title for page about GDP/Income related to Deaths per State
                          sidebarLayout(
                            sidebarPanel(
+               # Description of the page and summary
                              h5("On this page we will be exploring the effect GDP per capita and average income had on the number of deaths from COVID-19. It will answer questions regarding the number of deaths in each state, the income and GDP for those states in correspondence with the number of deaths, and how GDP or Income may have influenced more or less deaths in each state. On the Y-Axis of this chart we see each state, depending on the number chosen from the slider, and on the X-axis we see the number of deaths in each state. The legend on the graph will depend on whether GDP or Income has been selected. It will rank the highest (red) to lowest (blue) and color the states according to there Income and GDP rate."),
                              br(),
+               # Interactive options, one slider and one pull down bar
                              selectInput("xvar", "Select variable for x-axis:",
-                                         choices = c("GDP", "Income"), selected = "Income"),
+                                         choices = c("GDP", "Income"), selected = "GDP"),
                              sliderInput("n_states", "Number of States to Display:",
                                          min = 5, max = 50, value = 50)
                            ),
+               # Main panel for histogram
                            mainPanel(
                              plotOutput("histogram", width = "700px", height = "750px")
                            ),
@@ -118,6 +122,8 @@ ui <- fluidPage(
                    paste(input$income[1],"is the number", mean(data1()$Income))
                  })
                  
+                 # SECTION 2: DEATHS PER STATE AND GDP/INCOME
+                 # Server function for GDP and Income descending in states
                  sorted_data <- reactive({
                    if (input$xvar == "GDP") {
                      data %>% 
@@ -127,6 +133,7 @@ ui <- fluidPage(
                        arrange(desc(Income))
                    }
                  })
+                 # Histogram function for GDP and Deaths per State
                  output$histogram <- renderPlot({
                    ggplot(sorted_data() %>% head(input$n_states), aes(x = reorder(State, -!!sym(input$xvar)), y = Deaths, fill = !!sym(input$xvar))) +
                      geom_col() +
